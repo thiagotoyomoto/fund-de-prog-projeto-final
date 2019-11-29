@@ -1,0 +1,32 @@
+# depslib dependency file v1.0
+1497371242 source:/home/thiago/UTFPR/Período/1/Fundamentos de Programação/Projetos Práticos/Projeto Prático 03/fund-de-prog-projeto-final/gerador_de_testes.c
+	<stdio.h>
+	<stdlib.h>
+	<math.h>
+	"gerador_de_testes.h"
+
+1497371186 /home/thiago/UTFPR/Período/1/Fundamentos de Programação/Projetos Práticos/Projeto Prático 03/fund-de-prog-projeto-final/gerador_de_testes.h
+	"imagem.h"
+
+1477931638 /home/thiago/UTFPR/Período/1/Fundamentos de Programação/Projetos Práticos/Projeto Prático 03/fund-de-prog-projeto-final/imagem.h
+
+1379510436 source:/home/thiago/UTFPR/Período/1/Fundamentos de Programação/Projetos Práticos/Projeto Prático 03/fund-de-prog-projeto-final/imagem.c
+	<stdlib.h>
+	<stdio.h>
+	<math.h>
+	"imagem.h"
+
+1575048548 source:/home/thiago/UTFPR/Período/1/Fundamentos de Programação/Projetos Práticos/Projeto Prático 03/fund-de-prog-projeto-final/main.c
+	<stdio.h>
+	<time.h>
+	<math.h>
+	"gerador_de_testes.h"
+	"trabalho3.h"
+
+1575048522 /home/thiago/UTFPR/Período/1/Fundamentos de Programação/Projetos Práticos/Projeto Prático 03/fund-de-prog-projeto-final/trabalho3.h
+	"imagem.h"
+
+1575048433 source:/home/thiago/UTFPR/Período/1/Fundamentos de Programação/Projetos Práticos/Projeto Prático 03/fund-de-prog-projeto-final/trabalho3.c
+	<math.h>
+	"trabalho3.h"
+

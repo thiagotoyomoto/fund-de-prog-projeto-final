@@ -42,6 +42,9 @@
 		<Unit filename="main.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="trabalho3.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="trabalho3.h" />
 		<Extensions>
 			<code_completion />
