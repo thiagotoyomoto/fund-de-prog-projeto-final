@@ -19,9 +19,9 @@
  * imagens, então o offset precisa ser igual para todos. Entretanto, usaremos
  * um valor diferente na hora de testar os trabalhos de fato. */
 
-#define RANDOM_SEED_OFFSET 47164
+#define RANDOM_SEED_OFFSET 333949
 
-#define N_TESTES 20
+#define N_TESTES 1000
 
 #define SALVA_INTERMEDIARIOS 0 /* Flag que diz se devemos salvar as imagens de teste. Desative se for rodar muitos testes! */
 
@@ -36,8 +36,6 @@ int main ()
 	double erro, erro_total = 0, maior_erro = 0;
 	int pior_teste = -1;
 	double distancia_real, distancia_medida;
-
-	Imagem *out;
 
     /* Cria o gerador de testes. */
 	gerador = criaGeradorDeTestes ();
@@ -55,9 +53,6 @@ int main ()
 		/* Gera um caso de teste. */
 		img1 = img2 = bg = NULL;
 		distancia_real = geraCasoDeTeste (gerador, i+RANDOM_SEED_OFFSET, &img1, &img2, &bg);
-
-		//out = criaImagem(img1->largura, img1->altura, 1);
-		//retiraFundoEBinariza(bg, img1, out);
 
 		if (!img1 || !img2 || distancia_real < 0)
 		{
@@ -89,11 +84,11 @@ int main ()
 		if (SALVA_INTERMEDIARIOS)
 		{
 			char foostring [64];
-			sprintf (foostring, "teste%d-1.bmp", i);
+			sprintf (foostring, "teste/teste%d-1.bmp", i);
 			salvaImagem (img1, foostring);
-			sprintf (foostring, "teste%d-2.bmp", i);
+			sprintf (foostring, "teste/teste%d-2.bmp", i);
 			salvaImagem (img2, foostring);
-			sprintf (foostring, "teste%d-bg.bmp", i);
+			sprintf (foostring, "teste/teste%d-bg.bmp", i);
 			salvaImagem (bg, foostring);
 		}
 
