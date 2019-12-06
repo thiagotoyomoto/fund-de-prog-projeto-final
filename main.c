@@ -3,7 +3,7 @@
 /*----------------------------------------------------------------------------*/
 /* Autor: Bogdan T. Nassu - nassu@dainf.ct.utfpr.edu.br                       */
 /*============================================================================*/
-/** Teste para o trabalho 3 (c·lculo da dist‚nica percorrida por veÌculos). */
+/** Teste para o trabalho 3 (c√°lculo da dist√¢nica percorrida por ve√≠culos). */
 /*============================================================================*/
 
 #include <stdio.h>
@@ -14,16 +14,16 @@
 #include "trabalho3.h"
 
 /*============================================================================*/
-/* Um modificador para a semente usada pelo gerador de n˙meros aleatÛrios na
- * hora de criar imagens de teste. Todos os trabalhos usar„o as mesmas
- * imagens, ent„o o offset precisa ser igual para todos. Entretanto, usaremos
+/* Um modificador para a semente usada pelo gerador de n√∫meros aleat√≥rios na
+ * hora de criar imagens de teste. Todos os trabalhos usar√£o as mesmas
+ * imagens, ent√£o o offset precisa ser igual para todos. Entretanto, usaremos
  * um valor diferente na hora de testar os trabalhos de fato. */
 
 #define RANDOM_SEED_OFFSET 333949
 
-#define N_TESTES 1000
+#define N_TESTES 1
 
-#define SALVA_INTERMEDIARIOS 0 /* Flag que diz se devemos salvar as imagens de teste. Desative se for rodar muitos testes! */
+#define SALVA_INTERMEDIARIOS 1 /* Flag que diz se devemos salvar as imagens de teste. Desative se for rodar muitos testes! */
 
 /*============================================================================*/
 
@@ -31,7 +31,7 @@ int main ()
 {
 	int i;
 	GeradorDeTestes* gerador; /* Gerador para os casos de teste. */
-	Imagem *img1, *img2, *bg; /* Imagens em 2 instantes de tempo, alÈm de um background. */
+	Imagem *img1, *img2, *bg; /* Imagens em 2 instantes de tempo, al√©m de um background. */
 	clock_t tempo_inicio, tempo_total = 0;
 	double erro, erro_total = 0, maior_erro = 0;
 	int pior_teste = -1;
@@ -80,7 +80,7 @@ int main ()
 
         printf ("Distancia real: %.2f, Medida: %.2f, Erro: %.2f\n", distancia_real, distancia_medida, erro);
 
-		/* Salva (se necess·rio). */
+		/* Salva (se necess√°rio). */
 		if (SALVA_INTERMEDIARIOS)
 		{
 			char foostring [64];
@@ -103,6 +103,7 @@ int main ()
 	printf ("Erro medio: %.2f\n", erro_total / N_TESTES);
 	printf ("Pior teste: %d (erro: %.2f)\n", pior_teste, maior_erro);
 	printf ("Tempo total: %d\n", (int) tempo_total);
+	printf ("SEED: %d\n", RANDOM_SEED_OFFSET);
 
 	/* Final. */
 	destroiGeradorDeTestes (gerador);
