@@ -1,9 +1,21 @@
+/*============================================================================*/
+/* Autor(es): Gabriela Bogomolof Taquegami - 2194236                          */
+/*            Thiago Ken Toyomoto - 2191164                                   */
+/*============================================================================*/
+/*                                Bibliotecas                                 */
+
 #include <math.h>
 
 #include "trabalho3.h"
 
+/*============================================================================*/
+/*                                 Constantes                                 */
+
 #define PIXEL_PRETO 0
 #define PIXEL_BRANCO 255
+
+/*============================================================================*/
+/*                                  Structs                                   */
 
 typedef struct coordenada {
     unsigned long linha;
@@ -14,6 +26,9 @@ typedef struct posicoes {
     Coordenada pontaSuperiorEsquerda;
     Coordenada pontaInferiorDireita;
 } Posicoes;
+
+/*============================================================================*/
+/*                                  Funções                                   */
 
 /**
 * Esta função copia a matrizA para a matrizB, de acordo com o tamanho das duas matrizes.
@@ -391,3 +406,5 @@ double calculaDistancia (Imagem* bg, Imagem* img1, Imagem* img2) {
     return (calculaDistanciaEntreCoordenadas(posicoes1.pontaSuperiorEsquerda, posicoes2.pontaSuperiorEsquerda) +
             calculaDistanciaEntreCoordenadas(posicoes1.pontaInferiorDireita, posicoes2.pontaInferiorDireita)) / 2.0;
 }
+
+/*============================================================================*/
