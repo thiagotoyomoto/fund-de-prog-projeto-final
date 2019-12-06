@@ -1,3 +1,6 @@
 *.bmp
 bin/
 obj/
+*.depend
+*.layout
+
