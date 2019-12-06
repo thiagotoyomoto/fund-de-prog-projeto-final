@@ -37,7 +37,7 @@ void copiaMatriz(unsigned char** matrizA, unsigned int linhasA, unsigned int col
 }
 
 /**
-* Esta função converte uma imagen em RGB para escala de cinza.
+* Esta função converte uma imagem em RGB para escala de cinza.
 *
 * Parâmetros:
 *     Imagem* img: Imagem em RGB;
@@ -55,8 +55,8 @@ void rgbParaEscalaDeCinza(Imagem* img, Imagem* out) {
 * totalmente preta.
 *
 * Parâmetros:
-*     Imagem* img:
-*     Imagem* out:
+*     Imagem* img: Imagem original
+*     Imagem* out: Imagem de saída com a borda preta
 */
 void deixaBordaPreta(Imagem* img, Imagem* out) {
     int i;
@@ -80,6 +80,13 @@ void deixaBordaPreta(Imagem* img, Imagem* out) {
     }
 }
 
+/**
+* Esta função faz com que cada pixel que não tenha nenhum vizinho branco, vire preto.
+*
+* Parâmetros:
+*     Imagem* img: Imagem de entrada;
+*     Imagem* out: Imagem de saída.
+*/
 void limparPixelsIsolados(Imagem *img, Imagem *out) {
     int i, j, k, l, ui, uj;
     char vizinhosBrancos;
@@ -92,37 +99,67 @@ void limparPixelsIsolados(Imagem *img, Imagem *out) {
 
     for(i = 1; i < ui; ++i) {
         for(j = 1; j < uj; ++j) {
-            if(img->dados[0][i][j] == 255) {
+            if(img->dados[CANAL_R][i][j] == 255) {
                 vizinhosBrancos = 0;
                 for(k = i - 1; k <= i + 1 && !vizinhosBrancos; ++k)
                     for(l = j - 1; l <= j + 1; ++l)
-                        if(k != i && l != j && img->dados[CANAL_R][k][l] == 255) {
+                        if(k != i && l != j && img->dados[CANAL_R][k][l] == PIXEL_BRANCO) {
                             vizinhosBrancos = 1;
                             break;
                         }
                 if(!vizinhosBrancos)
-                    out->dados[CANAL_R][i][j] = 0;
+                    out->dados[CANAL_R][i][j] = PIXEL_PRETO;
             }
         }
     }
 }
 
+/**
+* Esta função binariza a imagem passada de acordo com o limiar passado.
+* Todo pixel que está com o valor maior ou igual ao limiar, recebe 255,
+* caso contrário recebe 0.
+*
+* Parâmetros:
+*     Imagem* img: Imagem de entrada;
+*     Imagem* out: Imagem binarizada;
+*     unsigned char limiar: Limiar de binarização.
+*/
 void binariza (Imagem* img, Imagem* out, unsigned char limiar) {
     int i, j;
 
     for(i = 0; i < img->altura && i < out->altura; i++)
         for(j = 0; j < img->largura && j < out->largura; j++)
-            out->dados[CANAL_R][i][j] = img->dados[CANAL_R][i][j] >= limiar ? 255 : 0;
+            out->dados[CANAL_R][i][j] = img->dados[CANAL_R][i][j] >= limiar ? PIXEL_BRANCO : PIXEL_PRETO;
 }
 
+/**
+* Esta função binariza uma diferença entre duas imagens de acordo com o limiar passado.
+* Se a diferença de cada pixel for maior ou igual ao limiar, o pixel resultante é igual
+* a 255, caso contrário, ele receberá 0.
+*
+* Parâmetros:
+*     Imagem* img1: Primeira imagem de entrada;
+*     Imagem* img2: Segunda imagem de entrada;
+*     Imagem* out: Imagem resultante binarizada;
+*     unsigned char limiar: limiar de binarização.
+*/
 void binarizaPorDiferencaEntreImagens(Imagem* img1, Imagem* img2, Imagem* out, unsigned char limiar) {
     int i, j;
 
     for(i = 0; i < img1->altura && i < img2->altura && i < out->altura; ++i)
         for(j = 0; j < img1->largura && j < img2->largura && j < out->largura; ++j)
-            out->dados[0][i][j] = abs(img1->dados[0][i][j] - img2->dados[0][i][j]) >= limiar ? 255 : 0;
+            out->dados[CANAL_R][i][j] = abs(img1->dados[CANAL_R][i][j] - img2->dados[CANAL_R][i][j]) >= limiar ? PIXEL_BRANCO : PIXEL_PRETO;
 }
 
+/**
+* Esta função aplica na imagem passada um filtro de média de largura
+* variável.
+*
+* Parâmetros:
+*      Imagem* img: Imagem a ser processada;
+*      Imagem* out: Imagem processada;
+*      unsigned int largura: Largura do filtro.
+*/
 void filtroDeMedia(Imagem *img, Imagem *out, unsigned int largura) {
     int i, j, k, l, limite, ui, uj;
     unsigned int s, larguraAoQuadrado;
@@ -143,6 +180,16 @@ void filtroDeMedia(Imagem *img, Imagem *out, unsigned int largura) {
     }
 }
 
+/**
+* Esta função chama todas as funções precisas para retirar o fundo
+* e binarizar a imagem, sendo mais usada para uma melhor organização
+* do codigo.
+*
+* Parâmetros:
+*      Imagem* bg: Imagem de fundo;
+*      Imagem* img: Imagem de entrada;
+*      Imagem* out: Imagem sem o fundo e binarizada.
+*/
 void retiraFundoEBinariza(Imagem* bg, Imagem* img, Imagem* out) {
     Imagem *aux = criaImagem(img->largura, img->altura, 1),
             *bgCinza = criaImagem(bg->largura, bg->altura, 1),
@@ -163,12 +210,12 @@ void retiraFundoEBinariza(Imagem* bg, Imagem* img, Imagem* out) {
     filtroDeMedia(out, aux, 3);
     filtroDeMedia(aux, out, 3);
 
-    deixaBordaPreta(out, aux);
+    deixaBordaPreta(out, out);
 
-    binariza(aux, out, 116);
+    binariza(out, aux, 116);
 
     // Esta função se encaixa no mesmo caso da função "filtroDeMedia"
-    limparPixelsIsolados(out, aux);
+    //limparPixelsIsolados(out, aux);
     limparPixelsIsolados(aux, out);
 
     // Desalocando as imagens não necessárias posteriormente
@@ -177,40 +224,68 @@ void retiraFundoEBinariza(Imagem* bg, Imagem* img, Imagem* out) {
     destroiImagem(imgCinza);
 }
 
-int quantidadeDePixelBrancoNaLinha(Imagem* img, unsigned int linha) {
+/**
+* Esta função calcula quantos pixels iguais a 255 há na linha desejada.
+*
+* Parâmetros:
+*     Imagem* img: Imagem a ser analisada;
+*     unsigned int linha: Índice da linha da imagem.
+*
+* Retorna: Quantidade de pixels brancos na linha.
+*/
+int quantidadeDePixeisBrancosNaLinha(Imagem* img, unsigned int linha) {
     int i, qtd = 0;
 
     for(i = 0; i < img->largura; ++i)
-        if(img->dados[CANAL_R][linha][i] == 255)
+        if(img->dados[CANAL_R][linha][i] == PIXEL_BRANCO)
             ++qtd;
 
     return qtd;
 }
 
-int quantidadeDePixelBrancoNaColuna(Imagem* img, unsigned int coluna) {
+/**
+* Esta função calcula quantos pixels iguais a 255 há na coluna desejada.
+*
+* Parâmetros:
+*     Imagem* img: Imagem a ser analisada;
+*     unsigned int coluna: Índice da coluna da imagem.
+*
+* Retorna: Quantidade de pixels brancos na coluna.
+*/
+int quantidadeDePixeisBrancosNaColuna(Imagem* img, unsigned int coluna) {
     int i, qtd = 0;
     for(i = 0; i < img->altura; ++i)
-        if(img->dados[CANAL_R][i][coluna] == 255)
+        if(img->dados[CANAL_R][i][coluna] == PIXEL_BRANCO)
             ++qtd;
 
     return qtd;
 }
 
-Coordenada achaCoordenadaDaPontaSuperiorEsquerda(Imagem* img, int qtdPixelsBrancos) {
-    int i, qtdPixelsBrancosEncontrada = 0;
+/**
+* Esta função calcula a coordenada da ponta superior esquerda da imagem.
+*
+* Parâmetros:
+*     Imagem* img: Imagem a ser analisada;
+*     unsigned int qtdPixeisBrancos: Quantidade de pixels mínimos na linha
+*                                    e coluna para descobrir a coordenada.
+*
+* Retorna: A coordenada da ponta superior esquerda do objeto.
+*/
+Coordenada achaCoordenadaDaPontaSuperiorEsquerda(Imagem* img, unsigned int qtdPixeisBrancos) {
+    int i, qtdPixeisBrancosEncontrada = 0;
     Coordenada coord;
 
     for(i = 0; i < img->altura; ++i) {
-        qtdPixelsBrancosEncontrada = quantidadeDePixelBrancoNaLinha(img, i);
-        if(qtdPixelsBrancosEncontrada >= qtdPixelsBrancos) {
+        qtdPixeisBrancosEncontrada = quantidadeDePixeisBrancosNaLinha(img, i);
+        if(qtdPixeisBrancosEncontrada >= qtdPixeisBrancos) {
             coord.linha = i;
             break;
         }
     }
 
     for(i = 0; i < img->largura; ++i) {
-        qtdPixelsBrancosEncontrada = quantidadeDePixelBrancoNaColuna(img, i);
-        if(qtdPixelsBrancosEncontrada >= qtdPixelsBrancos) {
+        qtdPixeisBrancosEncontrada = quantidadeDePixeisBrancosNaColuna(img, i);
+        if(qtdPixeisBrancosEncontrada >= qtdPixeisBrancos) {
             coord.coluna = i;
             break;
         }
@@ -219,21 +294,31 @@ Coordenada achaCoordenadaDaPontaSuperiorEsquerda(Imagem* img, int qtdPixelsBranc
     return coord;
 }
 
-Coordenada achaCoordenadaDaPontaInferiorDireita(Imagem* img, int qtdPixelsBrancos) {
-    int i, qtdPixelsBrancosEncontrada = 0;
+/**
+* Esta função calcula a coordenada da ponta inferior direita da imagem.
+*
+* Parâmetros:
+*     Imagem* img: Imagem a ser analisada;
+*     unsigned int qtdPixeisBrancos: Quantidade de pixels mínimos na linha
+*                                    e coluna para descobrir a coordenada.
+*
+* Retorna: A coordenada da ponta inferior direita do objeto.
+*/
+Coordenada achaCoordenadaDaPontaInferiorDireita(Imagem* img, int qtdPixeisBrancos) {
+    int i, qtdPixeisBrancosEncontrada = 0;
     Coordenada coord;
 
     for(i = img->altura-1; i >= 0; --i) {
-        qtdPixelsBrancosEncontrada = quantidadeDePixelBrancoNaLinha(img, i);
-        if(qtdPixelsBrancosEncontrada >= qtdPixelsBrancos) {
+        qtdPixeisBrancosEncontrada = quantidadeDePixeisBrancosNaLinha(img, i);
+        if(qtdPixeisBrancosEncontrada >= qtdPixeisBrancos) {
             coord.linha = i;
             break;
         }
     }
 
     for(i = img->largura-1; i >= 0; --i) {
-        qtdPixelsBrancosEncontrada = quantidadeDePixelBrancoNaColuna(img, i);
-        if(qtdPixelsBrancosEncontrada >= qtdPixelsBrancos) {
+        qtdPixeisBrancosEncontrada = quantidadeDePixeisBrancosNaColuna(img, i);
+        if(qtdPixeisBrancosEncontrada >= qtdPixeisBrancos) {
             coord.coluna = i;
             break;
         }
@@ -242,6 +327,12 @@ Coordenada achaCoordenadaDaPontaInferiorDireita(Imagem* img, int qtdPixelsBranco
     return coord;
 }
 
+/**
+* Esta função calcula as posições(conjunto de coordenadas) do objeto.
+*
+* Parâmetros:
+*     Imagem* img: Imagem a ser analisada para a coleta das coordenadas.
+*/
 Posicoes pegaPosicoesDoCarro(Imagem* img) {
     Posicoes posicoes;
 
@@ -251,6 +342,16 @@ Posicoes pegaPosicoesDoCarro(Imagem* img) {
     return posicoes;
 }
 
+/**
+* Esta função calcula a distância entre duas coordenadas, utilizando-se
+* do teorema de Pitágoras.
+*
+* Parâmetros:
+*     Coordenada a: Primeira coordenada;
+*     Coordenada b: Segunda coordenada.
+*
+* Retorna: Distância entre as duas distâncias.
+*/
 double calculaDistanciaEntreCoordenadas(Coordenada a, Coordenada b) {
     Coordenada distancia;
 
@@ -260,8 +361,19 @@ double calculaDistanciaEntreCoordenadas(Coordenada a, Coordenada b) {
     return sqrt(distancia.linha * distancia.linha + distancia.coluna * distancia.coluna);
 }
 
+/**
+* Esta função calcula a distância entre os dois objetos encontrados
+* nas duas imagens passadas, juntamente com uma imagem separada do
+* fundo unico das imagens.
+*
+* Parâmetros:
+*     Imagem* bg: Imagem do fundo;
+*     Imagem* img1: Imagem com o primeiro objeto;
+*     Imagem* img2: Imagem com o segundo objeto.
+*
+* Retorna: A distância entre os dois objetos.
+*/
 double calculaDistancia (Imagem* bg, Imagem* img1, Imagem* img2) {
-    double distancia1, distancia2, distanciaMedia;
     Posicoes posicoes1, posicoes2;
 
     Imagem* img1Bin = criaImagem(img1->largura, img1->altura, 1);
@@ -270,18 +382,12 @@ double calculaDistancia (Imagem* bg, Imagem* img1, Imagem* img2) {
     retiraFundoEBinariza(bg, img1, img1Bin);
     retiraFundoEBinariza(bg, img2, img2Bin);
 
-    salvaImagem(img1Bin, "img-definitiva.bmp");
-    salvaImagem(img2Bin, "img-definitiva.bmp");
-
     posicoes1 = pegaPosicoesDoCarro(img1Bin);
     posicoes2 = pegaPosicoesDoCarro(img2Bin);
-
-    distancia1 = calculaDistanciaEntreCoordenadas(posicoes1.pontaSuperiorEsquerda, posicoes2.pontaSuperiorEsquerda);
-    distancia2 = calculaDistanciaEntreCoordenadas(posicoes1.pontaInferiorDireita, posicoes2.pontaInferiorDireita);
-    distanciaMedia = (distancia1 + distancia2) / 2.0;
 
     destroiImagem(img1Bin);
     destroiImagem(img2Bin);
 
-    return distanciaMedia;
+    return (calculaDistanciaEntreCoordenadas(posicoes1.pontaSuperiorEsquerda, posicoes2.pontaSuperiorEsquerda) +
+            calculaDistanciaEntreCoordenadas(posicoes1.pontaInferiorDireita, posicoes2.pontaInferiorDireita)) / 2.0;
 }
