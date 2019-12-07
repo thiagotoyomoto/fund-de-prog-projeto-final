@@ -18,8 +18,8 @@
 /*                                  Structs                                   */
 
 typedef struct coordenada {
-    unsigned long linha;
-    unsigned long coluna;
+    unsigned int linha;
+    unsigned int coluna;
 } Coordenada;
 
 typedef struct posicoes {
