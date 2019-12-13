@@ -3,3 +3,5 @@ bin/
 obj/
 *.depend
 *.layout
+auto-avaliacao.txt
+*.out
